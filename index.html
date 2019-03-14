@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>fibrotime</title>
+    <meta charset="utf-8" />
+
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.0.0/build/vega.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@3.0.0-rc14/build/vega-lite.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@3.29.1/build/vega-embed.js"></script>
+
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.2.3/dist/js/tabulator.min.js"></script>
+    <link href="https://unpkg.com/tabulator-tables@4.2.3/dist/css/tabulator.min.css" rel="stylesheet">
+
+    <script src="scripts/pako.js"></script>
+
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+
+    <style media="screen">
+      /* Add space between Vega-Embed links  */
+      .vega-actions a {
+        margin-right: 5px;
+      }
+      .tabulator-row .tabulator-cell{
+        padding: 8px 4px;
+        min-height: 120px;
+      }
+      /*.tabulator-row.tabulator-selectable:hover {
+        background-color: #fff;
+        cursor: pointer;
+      }*/
+    </style>
+  </head>
+  <body>
+    <h1>Gene expression response to TNF and IL-17A in stromal fibroblasts</h1>
+
+    <!-- Container for the visualization -->
+    <!--<div id="vis"></div>-->
+
+    <div id="example-table"></div>
+
+		<script src="scripts/one-gene.js"></script>
+    <script src="scripts/index.js"></script>
+  </body>
+</html>
