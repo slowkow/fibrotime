@@ -54,7 +54,8 @@ var logTime = function(text) {
 
 // Assign the specification to a local variable vlSpec.
 var vlSpec = {
-  $schema: 'https://vega.github.io/schema/vega-lite/v3.json',
+  // $schema: 'https://vega.github.io/schema/vega-lite/v3.json',
+  $schema: 'https://vega.github.io/schema/vega-lite/v3.0.0-rc14.json',
   data: {
     values: mydata,
   },
@@ -80,7 +81,8 @@ var global_vlSpec = null
 var update_chart = function(selector, data) {
   // Assign the specification to a local variable vlSpec.
   var vlSpec = {
-    "$schema": 'https://vega.github.io/schema/vega-lite/v3.json',
+    //"$schema": 'https://vega.github.io/schema/vega-lite/v3.json',
+  $schema: 'https://vega.github.io/schema/vega-lite/v3.0.0-rc14.json',
 //    "title": {
 //      "text": data.hgnc_symbol,
 //      "anchor": "middle",
@@ -153,6 +155,7 @@ var stat_columns = {
   'STAT4': 'si-STAT4'
 };
 
+var scatter1 = document.getElementById('scatter1');
 var state = {
   scatter1_selected: []
 };
@@ -217,29 +220,34 @@ var make_plotly = function(state) {
 
   var bonf = 0.05 / state.stats_table.length;
 
-  var rows = state.stats_table.filter(
-    row => row.t6_pvalue <= bonf || row.d10_pvalue <= bonf
-  );
+  // var rows = state.stats_table.filter(
+  //   row => row.t6_pvalue <= bonf || row.d10_pvalue <= bonf
+  // );
+  var rows = state.stats_table;
 
   var data = [{
-    type: 'scatter',
+    type: 'scattergl',
     mode: 'markers',
     x: unpack(rows, "t6_fold_change").map(d => Math.log2(d)),
     y: unpack(rows, "d10_fold_change").map(d => Math.log2(d)),
     text: unpack(rows, 'hgnc_symbol').map(d => '<i>' + d + '</i>'),
+    customdata: unpack(rows, "ensembl_id"),
     hoverinfo: 'text',
+    showlegend: false,
     marker: {
       color: '#333',
-      size: 5
+      size: 6,
     },
-    transforms: [
-      // {
-      //   type: 'filter',
-      //   target: unpack(state.stats_table, 't6_pvalue'),
-      //   operation: '<',
-      //   value: '0.05'
-      // }
-    ]
+    selected: {
+      marker: {
+        color: 'red'
+      }
+    },
+    unselected: {
+      marker: {
+        color: '#333'
+      }
+    }
   }];
 
   var layout = {
@@ -252,7 +260,8 @@ var make_plotly = function(state) {
         family: 'Helvetica Neue, Helvetica, Tahoma, sans'
       }
     },
-    showlegend: false,
+    // showlegend: false,
+    // showlegend: true,
     font: {
       size: 14,
       family: 'Helvetica Neue, Helvetica, Tahoma, sans'
@@ -294,8 +303,6 @@ var make_plotly = function(state) {
     ]
   };
 
-  var scatter1 = document.getElementById('scatter1');
-
   Plotly.newPlot('scatter1', data, layout, config);
 
   scatter1.on('plotly_click', function(eventData) {
@@ -323,7 +330,34 @@ var make_plotly = function(state) {
     state.scatter1_selected = [];
     table1.clearFilter();
     // table1.replaceData(state.stats_table);
+    var update = {
+      marker: {
+        color: '#333'
+      }
+    }
+    var trace = 0;
+    // Plotly.restyle(scatter1, 'marker.color', '#333')
+    Plotly.restyle(scatter1, update, trace);
   });
+
+  // We can use this to add a new trace.
+  //
+  // var new_data = [{
+  //   type: 'scattergl',
+  //   mode: 'markers',
+  //   x: [6],
+  //   y: [3],
+  //   text: ['butt'],
+  //   customdata: ['cool'],
+  //   hoverinfo: 'text',
+  //   showlegend: true,
+  //   name: 'butt',
+  //   marker: {
+  //     color: 'red',
+  //     size: 6,
+  //   }
+  // }];
+  // Plotly.addTraces(scatter1, new_data);
 }
 
 
@@ -469,41 +503,33 @@ var table1_columns = [
   }
 ];
 
+var row_hover = function(e, row) {
+  // e - the event object
+  // row - row component
+  var ensembl_id = row._row.data.ensembl_id;
+  var point = scatter1.data[0].customdata.indexOf(ensembl_id);
+  // console.log(ensembl_id);
+  // console.log(point);
+  console.log(scatter1.data[0]);
+
+  // This only works for 'scatter', but not for 'scattergl'
+  //
+  // Plotly.Fx.hover('scatter1', [
+  //   {curveNumber: 0, pointNumber: point}
+  // ]);
+}
 
 var make_table = function() {
   //create Tabulator on DOM element with id "example-table"
   table1 = new Tabulator("#example-table", {
     selectable: false,
-     height: 800, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
-     data: state['stats_table'],
-     // layout: "fitColumns", //fit columns to width of table (optional)
-     layout: "fitDataFill",
-//     rowFormatter:function(row, data){
-//        //row - JQuery object for row
-//        //data - the data for the row
-//
-//        row.css({"height":"50px"});
-//    },
-     columns: table1_columns,
-//     rowClick: function(e, row){ //trigger an alert message when the row is clicked
-//       this_ensembl_id = row.getData().ensembl_id;
-//       console.log("Clicked " + this_ensembl_id);
-//       gene = state.tpm_matrix.filter((d) => { return d.ID_REF == this_ensembl_id })[0];
-//       x = Object.assign({}, state.metadata);
-//       for (var i = 0; i < 175; i++) {
-//         x[i].gene = +gene[x[i].sample];
-//         x[i].time = +x[i].time;
-//       }
-//       var retval = [];
-//       for (var i in x) {
-//         if (x[i].stimulation != "None") {
-//           retval.push(x[i]);
-//         }
-//       }
-//       x = retval;
-//       update_chart('#vis', {'hgnc_symbol': row.getData().hgnc_symbol, 'values': x});
-//       console.log(gene);
-//     }
+    // set height of table (in CSS or here), this enables the Virtual DOM and
+    // improves render speed dramatically (can be any valid css height value)
+    height: 600, 
+    data: state.stats_table,
+    layout: "fitDataFill",
+    columns: table1_columns
+    // rowMouseEnter: row_hover
   });
 }
 
@@ -525,7 +551,8 @@ var plot_sirna  = function(selector, data) {
   }
 
   var vlSpec = {
-    "$schema": 'https://vega.github.io/schema/vega-lite/v3.json',
+    //"$schema": 'https://vega.github.io/schema/vega-lite/v3.json',
+  $schema: 'https://vega.github.io/schema/vega-lite/v3.0.0-rc14.json',
 //    "title": {
 //      "text": data.hgnc_symbol,
 //      "anchor": "middle",
