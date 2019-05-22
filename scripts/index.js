@@ -138,16 +138,16 @@ var update_chart = function(selector, data) {
 }
 
 var stat_columns = {
-  't2':    'TNF (2h)',
-  't4':    'TNF (4h)',
-  't6':    'TNF (6h)',
-  't8':    'TNF (8h)',
-  't10':   'TNF (10h)',
-  't12':   'TNF (12h)',
-  't18':   'TNF (18h)',
-  't24':   'TNF (24h)',
-  'd1':    'IL-17A (1)',
-  'd10':   'IL-17A (10)',
+  't2':    'TNF at 2h vs 0h',
+  't4':    'TNF at 4h vs 0h',
+  't6':    'TNF at 6h vs 0h',
+  't8':    'TNF at 8h  vs 0h',
+  't10':   'TNF at 10h vs 0h',
+  't12':   'TNF at 12h vs 0h',
+  't18':   'TNF at 18h vs 0h',
+  't24':   'TNF at 24h vs 0h',
+  'd1':    'TNF and IL-17A (1) vs TNF',
+  'd10':   'TNF and IL-17A (10) vs TNF',
   'CUX1':  'si-CUX1',
   'ELF3':  'si-ELF3',
   'LIFR':  'si-LIFR',
@@ -208,8 +208,58 @@ var main = function() {
 //    .run();
 
   make_plotly(state);
+  
+  make_plotly_buttons(state);
 
   make_table();
+}
+
+var make_plotly_buttons = function(state) {
+
+  var cols = Object.keys(state.stats_table[0])
+    .filter(d => d.indexOf("fold_change") != -1)
+
+  var d = document.getElementById("scatter1-buttons");
+
+  var x = document.createElement("span");
+  x.innerHTML = "x-axis: ";
+  d.appendChild(x);
+  for (var i = 0; i < cols.length; i++) {
+    var b = document.createElement("button");
+    var label = cols[i].replace("_fold_change", "");
+    b.innerHTML = label;
+    b.onclick = ((y) => function() {
+      console.log(y);
+      state.scatter1_x = y;
+      var rows = state.stats_table;
+      var newx = unpack(rows, state.scatter1_x).map(d => Math.log2(d));
+      scatter1.data[0].x = newx;
+      scatter1.layout.xaxis.title = stat_columns[y.replace("_fold_change", "")];
+      Plotly.redraw(scatter1);
+    })(cols[i]);
+    d.appendChild(b);
+  }
+
+  d.appendChild(document.createElement("br"));
+
+  var x = document.createElement("span");
+  x.innerHTML = "y-axis: ";
+  d.appendChild(x);
+  for (var i = 0; i < cols.length; i++) {
+    var b = document.createElement("button");
+    var label = cols[i].replace("_fold_change", "");
+    b.innerHTML = label;
+    b.onclick = ((y) => function() {
+      console.log(y);
+      state.scatter1_y = y;
+      var rows = state.stats_table;
+      var newy = unpack(rows, state.scatter1_y).map(d => Math.log2(d));
+      scatter1.data[0].y = newy;
+      scatter1.layout.yaxis.title = stat_columns[y.replace("_fold_change", "")];
+      Plotly.redraw(scatter1);
+    })(cols[i]);
+    d.appendChild(b);
+  }
 }
 
 function unpack(rows, key) {
@@ -251,7 +301,7 @@ var make_plotly = function(state) {
   }];
 
   var layout = {
-    // title: 'Genes',
+    title: 'Log2 Fold Change',
     // dragmode: 'lasso',
     dragmode: 'select',
     hovermode: 'closest',
@@ -517,6 +567,7 @@ var row_hover = function(e, row) {
   // Plotly.Fx.hover('scatter1', [
   //   {curveNumber: 0, pointNumber: point}
   // ]);
+
 }
 
 var make_table = function() {
@@ -659,6 +710,12 @@ fetch('data/rnaseq-data.tsv.gz', function(tsv_string) {
       t6_pvalue:         +d.t6_pvalue,
       t8_fold_change:    +d.t8_fold_change,
       t8_pvalue:         +d.t8_pvalue,
+      t12_fold_change:   +d.t12_fold_change,
+      t12_pvalue:        +d.t12_pvalue,
+      t18_fold_change:   +d.t18_fold_change,
+      t18_pvalue:        +d.t18_pvalue,
+      t24_fold_change:   +d.t24_fold_change,
+      t24_pvalue:        +d.t24_pvalue,
       d1_fold_change:    +d.d1_fold_change,
       d1_pvalue:         +d.d1_pvalue,
       d10_fold_change:   +d.d10_fold_change,
