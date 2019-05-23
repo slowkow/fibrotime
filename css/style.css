@@ -1,0 +1,15 @@
+body {
+  font-family: "Helvetica Neue", "Helvetica", "Sans";
+}
+/* Add space between Vega-Embed links  */
+.vega-actions a {
+  margin-right: 5px;
+}
+.tabulator-row .tabulator-cell{
+  padding: 8px 4px;
+  min-height: 130px;
+}
+/*.tabulator-row.tabulator-selectable:hover {
+background-color: #fff;
+cursor: pointer;
+}*/

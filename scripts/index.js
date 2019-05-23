@@ -78,17 +78,18 @@ var vlSpec = {
 
 var global_vlSpec = null
 
-var update_chart = function(selector, data) {
+var plot_time = function(selector, data) {
   // Assign the specification to a local variable vlSpec.
   var vlSpec = {
     //"$schema": 'https://vega.github.io/schema/vega-lite/v3.json',
   $schema: 'https://vega.github.io/schema/vega-lite/v3.0.0-rc14.json',
-//    "title": {
-//      "text": data.hgnc_symbol,
-//      "anchor": "middle",
-//      "fontStyle": "italic",
-//      "fontSize": 16
-//    },
+    "title": {
+      "text": data.hgnc_symbol,
+      "anchor": "middle",
+      "fontStyle": "italic",
+      "fontWeight": "normal",
+      "fontSize": 12
+    },
     "width": 80,
     "height": 60,
     "data": {
@@ -105,8 +106,10 @@ var update_chart = function(selector, data) {
       "x": {
         "field": "time", "type": "quantitative",
         "axis": {
-          title: false,
-          values: [0, 24]
+          "title": "Time (h)",
+          "values": [0, 24],
+          "titleFont": "Helvetica Neue",
+          "titleFontWeight": "normal"
         }
       },
       "y": {
@@ -119,8 +122,9 @@ var update_chart = function(selector, data) {
           "zero": false
         },
         "axis": {
-          // "title": "Log2 TPM"
-          title: false
+          "title": "Log2 TPM",
+          "titleFont": "Helvetica Neue",
+          "titleFontWeight": "normal"
         }
       },
       "color": {
@@ -221,15 +225,21 @@ var make_plotly_buttons = function(state) {
 
   var d = document.getElementById("scatter1-buttons");
 
-  var x = document.createElement("span");
+  var r = document.createElement("div");
+  d.appendChild(r);
+
+  var x = document.createElement("div");
+  x.className = "pa2";
   x.innerHTML = "x-axis: ";
-  d.appendChild(x);
+  r.appendChild(x);
+  x = document.createElement("div");
   for (var i = 0; i < cols.length; i++) {
     var b = document.createElement("button");
     var label = cols[i].replace("_fold_change", "");
+    b.className = "br3 ma1";
     b.innerHTML = label;
     b.onclick = ((y) => function() {
-      console.log(y);
+      //this.className = "br3 ma1 ba b--red";
       state.scatter1_x = y;
       var rows = state.stats_table;
       var newx = unpack(rows, state.scatter1_x).map(d => Math.log2(d));
@@ -237,20 +247,26 @@ var make_plotly_buttons = function(state) {
       scatter1.layout.xaxis.title = stat_columns[y.replace("_fold_change", "")];
       Plotly.redraw(scatter1);
     })(cols[i]);
-    d.appendChild(b);
+    x.appendChild(b);
   }
+  r.appendChild(x);
 
-  d.appendChild(document.createElement("br"));
+  var r = document.createElement("div");
+  d.appendChild(r);
 
-  var x = document.createElement("span");
+  var x = document.createElement("div");
+  x.className = "pa2";
   x.innerHTML = "y-axis: ";
-  d.appendChild(x);
+  r.appendChild(x);
+  x = document.createElement("div");
+  x.className = "pb5";
   for (var i = 0; i < cols.length; i++) {
     var b = document.createElement("button");
     var label = cols[i].replace("_fold_change", "");
+    b.className = "br3 ma1";
     b.innerHTML = label;
     b.onclick = ((y) => function() {
-      console.log(y);
+      //this.className = "br3 ma1 ba b--red";
       state.scatter1_y = y;
       var rows = state.stats_table;
       var newy = unpack(rows, state.scatter1_y).map(d => Math.log2(d));
@@ -258,8 +274,9 @@ var make_plotly_buttons = function(state) {
       scatter1.layout.yaxis.title = stat_columns[y.replace("_fold_change", "")];
       Plotly.redraw(scatter1);
     })(cols[i]);
-    d.appendChild(b);
+    x.appendChild(b);
   }
+  r.appendChild(x);
 }
 
 function unpack(rows, key) {
@@ -318,7 +335,7 @@ var make_plotly = function(state) {
     },
     xaxis: {
       title: {
-        text: 'Log2 fold-change for TNF (6h)'
+        text: stat_columns["t6"]
       },
       zerolinecolor: '#969696',
       showline: true,
@@ -421,7 +438,7 @@ var lineFormatter = function(cell, formatterParams, onRendered) {
 
     var div = document.createElement('div');
     div.width = 200;
-    div.height = 100;
+    div.height = 120;
     el.appendChild(div)
 
     var this_ensembl_id = cell.getRow().getData().ensembl_id
@@ -448,7 +465,7 @@ var lineFormatter = function(cell, formatterParams, onRendered) {
       }
     }
     
-    update_chart(
+    plot_time(
       '#' + this_ensembl_id,
       {
         'hgnc_symbol': this_hgnc_symbol,
@@ -464,7 +481,7 @@ var lineFormatter2 = function(cell, formatterParams, onRendered) {
 
     var div = document.createElement('div');
     div.width = 200;
-    div.height = 100;
+    div.height = 120;
     el.appendChild(div)
 
     var this_ensembl_id = cell.getRow().getData().ensembl_id
@@ -484,10 +501,10 @@ var lineFormatter2 = function(cell, formatterParams, onRendered) {
 var table1_columns = [
   //{title:"Ensembl ID", field:"ensembl_id", width:150},
   {
-    title: "Time Series", field: "ensembl_id", width: 240, formatter: lineFormatter
+    title: "Time Series", field: "ensembl_id", width: 250, formatter: lineFormatter
   },
   {
-    title: "siRNA", field: "ensembl_id", width: 140, formatter: lineFormatter2
+    title: "siRNA", field: "ensembl_id", width: 150, formatter: lineFormatter2
   },
   {
     title:"Gene",
@@ -496,24 +513,24 @@ var table1_columns = [
 //         headerFilterParams: {min: 0, max: 10, step: 1}
     width: 100
   },
+  // {
+  //   title:"Mean",
+  //   field:"mean_expression",
+// //         headerFilter: "numeric",
+// //         headerFilterParams: {min: 0, max: 10, step: 1}
+  // },
   {
-    title:"Mean",
-    field:"mean_expression",
-//         headerFilter: "numeric",
-//         headerFilterParams: {min: 0, max: 10, step: 1}
-  },
-  {
-    title: "TNF",
+    title: "TNF at 6h",
     columns: [
       {title:"FC", field:"t6_fold_change"},
-      {title:"P", field:"t6_pvalue"}
+      {title:"P", field:"t6_pvalue", headerFilter: "input", headerFilterFunc: "<="}
     ]
   },
   {
-    title: "IL-17A",
+    title: "IL-17A (10)",
     columns: [
       {title:"FC", field:"d10_fold_change"},
-      {title:"P", field:"d10_pvalue"}
+      {title:"P", field:"d10_pvalue", headerFilter: "input", headerFilterFunc: "<="}
     ]
   },
   {
@@ -604,12 +621,13 @@ var plot_sirna  = function(selector, data) {
   var vlSpec = {
     //"$schema": 'https://vega.github.io/schema/vega-lite/v3.json',
   $schema: 'https://vega.github.io/schema/vega-lite/v3.0.0-rc14.json',
-//    "title": {
-//      "text": data.hgnc_symbol,
-//      "anchor": "middle",
-//      "fontStyle": "italic",
-//      "fontSize": 16
-//    },
+    "title": {
+      "text": data.hgnc_symbol,
+      "anchor": "middle",
+      "fontStyle": "italic",
+      "fontWeight": "normal",
+      "fontSize": 12
+    },
     "width": 80,
     "height": 60,
     "data": {
@@ -619,9 +637,55 @@ var plot_sirna  = function(selector, data) {
       {
         "calculate": "datum.fdr < 0.05",
         "as": "signif"
+      },
+      {
+        "calculate": "'si-' + datum.sirna",
+        "as": "sirna"
       }
     ],
     "layer": [
+      {
+        "data": {
+          "values": [
+            { "x": 1, "y": null},
+            { "x": 0.5, "y": null},
+            { "x": 2, "y": null}
+          ]
+        },
+        "mark": {"type": "rect"},
+        "encoding": {
+          "x": {
+            "field": "x", "type": "quantitative",
+            "aggregate": "min",
+            "axis": {
+              "title": "Fold Change",
+              "titleFont": "Helvetica Neue",
+              "titleFontWeight": "normal"
+            }
+          },
+          "x2": {
+            "field": "x", "type": "quantitative",
+            "aggregate": "max"
+          },
+          //"size": {"value": 1},
+          "color": {"value": "#EFEFEF"}
+        }
+      },
+      {
+        "data": {
+          "values": [
+            { "x": 1, "y": null}
+          ]
+        },
+        "mark": {"type": "rule"},
+        "encoding": {
+          "x": {
+            "field": "x", "type": "quantitative"
+          },
+          "size": {"value": 1},
+          "color": {"value": "#333"}
+        }
+      },
       {
         "mark": {"type": "rule"},
         "encoding": {
