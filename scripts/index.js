@@ -576,49 +576,49 @@ var table1_columns = [
   {
     title: "TNF at 6h",
     columns: [
-      {title:"FC", field:"t6_log2_fold_change"},
+      {title:"log2FC", field:"t6_log2_fold_change"},
       {title:"P", field:"t6_pvalue", headerFilter: "input", headerFilterFunc: "<="}
     ]
   },
   {
     title: "IL-17A (10)",
     columns: [
-      {title:"FC", field:"d10_log2_fold_change"},
+      {title:"log2FC", field:"d10_log2_fold_change"},
       {title:"P", field:"d10_pvalue", headerFilter: "input", headerFilterFunc: "<="}
     ]
   },
   {
     title: "si-CUX1",
     columns: [
-      {title:"FC", field:"CUX1_log2_fold_change"},
+      {title:"log2FC", field:"CUX1_log2_fold_change"},
       {title:"P", field:"CUX1_pvalue"}
     ]
   },
   {
     title: "si-LIFR",
     columns: [
-      {title:"FC", field:"LIFR_log2_fold_change"},
+      {title:"log2FC", field:"LIFR_log2_fold_change"},
       {title:"P", field:"LIFR_pvalue"}
     ]
   },
   {
     title: "si-STAT3",
     columns: [
-      {title:"FC", field:"STAT3_log2_fold_change"},
+      {title:"log2FC", field:"STAT3_log2_fold_change"},
       {title:"P", field:"STAT3_pvalue"}
     ]
   },
   {
     title: "si-STAT4",
     columns: [
-      {title:"FC", field:"STAT4_log2_fold_change"},
+      {title:"log2FC", field:"STAT4_log2_fold_change"},
       {title:"P", field:"STAT4_pvalue"}
     ]
   },
   {
     title: "si-ELF3",
     columns: [
-      {title:"FC", field:"ELF3_log2_fold_change"},
+      {title:"log2FC", field:"ELF3_log2_fold_change"},
       {title:"P", field:"ELF3_pvalue"}
     ]
   }
