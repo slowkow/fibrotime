@@ -349,6 +349,13 @@ var make_plotly = function(state) {
         family: 'Helvetica Neue, Helvetica, Tahoma, sans'
       }
     },
+    margin: {
+      l: 50,
+      r: 50,
+      b: 50,
+      t: 50,
+      pad: 0
+    },
     // showlegend: false,
     // showlegend: true,
     font: {
@@ -367,7 +374,7 @@ var make_plotly = function(state) {
     },
     yaxis: {
       title: {
-        text: 'TNF and IL-17\nvs TNF'
+        text: stat_columns["d10"]
       },
       // tickformat: '%',
       zerolinecolor: '#969696',
@@ -612,17 +619,21 @@ var row_hover = function(e, row) {
   // e - the event object
   // row - row component
   var ensembl_id = row._row.data.ensembl_id;
+  var hgnc_symbol = row._row.data.hgnc_symbol;
+	var box_width = hgnc_symbol.length * 10; 
   var point = scatter1.data[0].customdata.indexOf(ensembl_id);
-  // console.log(ensembl_id);
-  // console.log(point);
-  console.log(scatter1.data[0]);
+  // FIXME This should not be hard-coded.
+	var xpx = scatter1.calcdata[0][0].t.xpx[point] + 52;
+	var ypx = scatter1.calcdata[0][0].t.ypx[point] + 50;
+  console.log(ensembl_id, point, xpx, ypx);
+	var temp = '<g class="hovertext" transform="translate(' + xpx + ',' + ypx + ')"><path d="M0,0L6,6v4.59375h' + box_width + 'v-21.1875H6V-6Z" style="stroke-width: 1px; fill: rgb(51, 51, 51); stroke: rgb(255, 255, 255);"></path><text class="nums" data-notex="1" x="9" y="4.796875" data-unformatted="<i>' + hgnc_symbol + '</i>" data-math="N" text-anchor="start" style="font-family: &quot;Helvetica Neue&quot;, Helvetica, Tahoma, sans; font-size: 13px; fill: rgb(255, 255, 255); fill-opacity: 1; white-space: pre;"><tspan style="font-style:italic">' + hgnc_symbol + '</tspan></text></g>';
+	var g = document.getElementsByClassName("hoverlayer")[0];
+	g.innerHTML = temp;
+}
 
-  // This only works for 'scatter', but not for 'scattergl'
-  //
-  // Plotly.Fx.hover('scatter1', [
-  //   {curveNumber: 0, pointNumber: point}
-  // ]);
-
+var row_hover_leave = function() {
+	var g = document.getElementsByClassName("hoverlayer")[0];
+	g.innerHTML = '';
 }
 
 var make_table = function() {
@@ -634,8 +645,9 @@ var make_table = function() {
     height: 600, 
     data: state.stats_table,
     layout: "fitDataFill",
-    columns: table1_columns
-    // rowMouseEnter: row_hover
+    columns: table1_columns,
+    rowMouseEnter: row_hover,
+    rowMouseLeave: row_hover_leave,
   });
 }
 
