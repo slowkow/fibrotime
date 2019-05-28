@@ -211,6 +211,8 @@ var main = function() {
 //    .renderer('canvas')
 //    .run();
 
+  document.getElementById('loader').style.display = "none";
+
   make_plotly(state);
   
   make_plotly_buttons(state);
@@ -226,38 +228,16 @@ var make_plotly_buttons = function(state) {
   var d = document.getElementById("scatter1-buttons");
 
   var r = document.createElement("div");
-  r.className = "fl w-40 w-100-m";
+  r.className = "fl w-50";
   d.appendChild(r);
-
-  //var x = document.createElement("div");
-  //x.className = "fl pa2 w-100";
-  //x.innerHTML = "x-axis: ";
-  //r.appendChild(x);
-  //x = document.createElement("div");
-  //x.className = "center";
-  //for (var i = 0; i < cols.length; i++) {
-  //  var b = document.createElement("button");
-  //  var label = cols[i].replace("_fold_change", "");
-  //  b.className = "fl w-20 br3 ma1";
-  //  b.innerHTML = label;
-  //  b.onclick = ((y) => function() {
-  //    //this.className = "br3 ma1 ba b--red";
-  //    state.scatter1_x = y;
-  //    var rows = state.stats_table;
-  //    var newx = unpack(rows, state.scatter1_x).map(d => Math.log2(d));
-  //    scatter1.data[0].x = newx;
-  //    scatter1.layout.xaxis.title = stat_columns[y.replace("_fold_change", "")];
-  //    Plotly.redraw(scatter1);
-  //  })(cols[i]);
-  //  x.appendChild(b);
-  //}
-  //r.appendChild(x);
 
   var x = document.createElement("div");
   x.className = "fl pa2";
   x.innerHTML = "x-axis: ";
   r.appendChild(x);
-  x = document.createElement("select");
+  x = document.createElement("div");
+  x.className = "fl pa2";
+  var s = document.createElement("select");
   for (var i = 0; i < cols.length; i++) {
     var b = document.createElement("option");
     var label = cols[i].replace("_log2_fold_change", "");
@@ -267,9 +247,9 @@ var make_plotly_buttons = function(state) {
       b.selected = 'selected';
     }
     b.innerHTML = label;
-    x.appendChild(b);
+    s.appendChild(b);
   }
-  x.onchange = function() {
+  s.onchange = function() {
     var y = this.value;
     state.scatter1_x = y;
     var rows = state.stats_table;
@@ -279,17 +259,20 @@ var make_plotly_buttons = function(state) {
     scatter1.layout.xaxis.title = stat_columns[y.replace("_log2_fold_change", "")];
     Plotly.redraw(scatter1);
   };
+  x.appendChild(s);
   r.appendChild(x);
 
   var r = document.createElement("div");
-  r.className = "fl w-40 w-100-m";
+  r.className = "fl w-50";
   d.appendChild(r);
 
   var x = document.createElement("div");
   x.className = "fl pa2";
   x.innerHTML = "y-axis: ";
   r.appendChild(x);
-  x = document.createElement("select");
+  x = document.createElement("div");
+  x.className = "fl pa2";
+  var s = document.createElement("select");
   for (var i = 0; i < cols.length; i++) {
     var b = document.createElement("option");
     var label = cols[i].replace("_log2_fold_change", "");
@@ -299,9 +282,9 @@ var make_plotly_buttons = function(state) {
       b.selected = 'selected';
     }
     b.innerHTML = label;
-    x.appendChild(b);
+    s.appendChild(b);
   }
-  x.onchange = function() {
+  s.onchange = function() {
     var y = this.value;
     //this.className = "br3 ma1 ba b--red";
     state.scatter1_y = y;
@@ -312,6 +295,7 @@ var make_plotly_buttons = function(state) {
     scatter1.layout.yaxis.title = stat_columns[y.replace("_log2_fold_change", "")];
     Plotly.redraw(scatter1);
   };
+  x.appendChild(s);
   r.appendChild(x);
 }
 
