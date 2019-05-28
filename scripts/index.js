@@ -182,19 +182,19 @@ var main = function() {
       }
     },
     "mark": "circle",
-    "transform": [
-      {
-        "calculate": "log(datum.t6_fold_change) / log(2)",
-        "as": "t6_log2fc"
-      },
-      {
-        "calculate": "log(datum.d10_fold_change) / log(2)",
-        "as": "d10_log2fc"
-      }
-    ],
+    // "transform": [
+    //   {
+    //     "calculate": "log(datum.t6_fold_change) / log(2)",
+    //     "as": "t6_log2fc"
+    //   },
+    //   {
+    //     "calculate": "log(datum.d10_fold_change) / log(2)",
+    //     "as": "d10_log2fc"
+    //   }
+    // ],
     "encoding": {
-      "x": {"field": "t6_log2fc", "type": "quantitative"},
-      "y": {"field": "d10_log2fc", "type": "quantitative"},
+      "x": {"field": "t6_log2_fold_change", "type": "quantitative"},
+      "y": {"field": "d10_log2_fold_change", "type": "quantitative"},
       "color": {
         "condition": {"selection": "brush"},
         "value": "grey"
@@ -260,9 +260,12 @@ var make_plotly_buttons = function(state) {
   x = document.createElement("select");
   for (var i = 0; i < cols.length; i++) {
     var b = document.createElement("option");
-    var label = cols[i].replace("_fold_change", "");
+    var label = cols[i].replace("_log2_fold_change", "");
     b.className = "fl w-20 br3 ma1";
     b.value = cols[i];
+    if (label == "t6") {
+      b.selected = 'selected';
+    }
     b.innerHTML = label;
     x.appendChild(b);
   }
@@ -270,9 +273,10 @@ var make_plotly_buttons = function(state) {
     var y = this.value;
     state.scatter1_x = y;
     var rows = state.stats_table;
-    var newx = unpack(rows, state.scatter1_x).map(d => Math.log2(d));
+    // var newx = unpack(rows, state.scatter1_x).map(d => Math.log2(d));
+    var newx = unpack(rows, state.scatter1_x);
     scatter1.data[0].x = newx;
-    scatter1.layout.xaxis.title = stat_columns[y.replace("_fold_change", "")];
+    scatter1.layout.xaxis.title = stat_columns[y.replace("_log2_fold_change", "")];
     Plotly.redraw(scatter1);
   };
   r.appendChild(x);
@@ -288,9 +292,12 @@ var make_plotly_buttons = function(state) {
   x = document.createElement("select");
   for (var i = 0; i < cols.length; i++) {
     var b = document.createElement("option");
-    var label = cols[i].replace("_fold_change", "");
+    var label = cols[i].replace("_log2_fold_change", "");
     b.className = "fl w-20 br3 ma1";
     b.value = cols[i];
+    if (label == 'd10') {
+      b.selected = 'selected';
+    }
     b.innerHTML = label;
     x.appendChild(b);
   }
@@ -299,9 +306,10 @@ var make_plotly_buttons = function(state) {
     //this.className = "br3 ma1 ba b--red";
     state.scatter1_y = y;
     var rows = state.stats_table;
-    var newy = unpack(rows, state.scatter1_y).map(d => Math.log2(d));
+    // var newy = unpack(rows, state.scatter1_y).map(d => Math.log2(d));
+    var newy = unpack(rows, state.scatter1_y);
     scatter1.data[0].y = newy;
-    scatter1.layout.yaxis.title = stat_columns[y.replace("_fold_change", "")];
+    scatter1.layout.yaxis.title = stat_columns[y.replace("_log2_fold_change", "")];
     Plotly.redraw(scatter1);
   };
   r.appendChild(x);
@@ -323,8 +331,10 @@ var make_plotly = function(state) {
   var data = [{
     type: 'scattergl',
     mode: 'markers',
-    x: unpack(rows, "t6_fold_change").map(d => Math.log2(d)),
-    y: unpack(rows, "d10_fold_change").map(d => Math.log2(d)),
+    // x: unpack(rows, "t6_fold_change").map(d => Math.log2(d)),
+    // y: unpack(rows, "d10_fold_change").map(d => Math.log2(d)),
+    x: unpack(rows, "t6_log2_fold_change"),
+    y: unpack(rows, "d10_log2_fold_change"),
     text: unpack(rows, 'hgnc_symbol').map(d => '<i>' + d + '</i>'),
     customdata: unpack(rows, "ensembl_id"),
     hoverinfo: 'text',
@@ -399,6 +409,22 @@ var make_plotly = function(state) {
   };
 
   Plotly.newPlot('scatter1', data, layout, config);
+
+  scatter1.on('plotly_hover', function(eventData) {
+    if (eventData) {
+      state.scatter1_hovered = eventData.points.map(
+        d => rows[d.pointIndex].ensembl_id
+      );
+      table1.setFilter("ensembl_id", "in", state.scatter1_hovered);
+    }
+  });
+
+  scatter1.on('plotly_unhover', function(eventData) {
+    table1.clearFilter();
+    if (state.scatter1_selected.length > 0) {
+      table1.setFilter("ensembl_id", "in", state.scatter1_selected);
+    }
+  });
 
   scatter1.on('plotly_click', function(eventData) {
     // console.log(eventData.points[0].text);
@@ -550,49 +576,49 @@ var table1_columns = [
   {
     title: "TNF at 6h",
     columns: [
-      {title:"FC", field:"t6_fold_change"},
+      {title:"FC", field:"t6_log2_fold_change"},
       {title:"P", field:"t6_pvalue", headerFilter: "input", headerFilterFunc: "<="}
     ]
   },
   {
     title: "IL-17A (10)",
     columns: [
-      {title:"FC", field:"d10_fold_change"},
+      {title:"FC", field:"d10_log2_fold_change"},
       {title:"P", field:"d10_pvalue", headerFilter: "input", headerFilterFunc: "<="}
     ]
   },
   {
     title: "si-CUX1",
     columns: [
-      {title:"FC", field:"CUX1_fold_change"},
+      {title:"FC", field:"CUX1_log2_fold_change"},
       {title:"P", field:"CUX1_pvalue"}
     ]
   },
   {
     title: "si-LIFR",
     columns: [
-      {title:"FC", field:"LIFR_fold_change"},
+      {title:"FC", field:"LIFR_log2_fold_change"},
       {title:"P", field:"LIFR_pvalue"}
     ]
   },
   {
     title: "si-STAT3",
     columns: [
-      {title:"FC", field:"STAT3_fold_change"},
+      {title:"FC", field:"STAT3_log2_fold_change"},
       {title:"P", field:"STAT3_pvalue"}
     ]
   },
   {
     title: "si-STAT4",
     columns: [
-      {title:"FC", field:"STAT4_fold_change"},
+      {title:"FC", field:"STAT4_log2_fold_change"},
       {title:"P", field:"STAT4_pvalue"}
     ]
   },
   {
     title: "si-ELF3",
     columns: [
-      {title:"FC", field:"ELF3_fold_change"},
+      {title:"FC", field:"ELF3_log2_fold_change"},
       {title:"P", field:"ELF3_pvalue"}
     ]
   }
@@ -639,9 +665,9 @@ var plot_sirna  = function(selector, data) {
   for (var s in sirnas) {
     values.push({
       "sirna":       sirnas[s],
-      "fold_change": data.values[sirnas[s] + "_fold_change"],
-      "ci_low":      data.values[sirnas[s] + "_ci_low"],
-      "ci_high":     data.values[sirnas[s] + "_ci_high"],
+      "fold_change": Math.pow(2, data.values[sirnas[s] + "_log2_fold_change"]),
+      "ci_low":      Math.pow(2, data.values[sirnas[s] + "_ci_low"]),
+      "ci_high":     Math.pow(2, data.values[sirnas[s] + "_ci_high"]),
       "fdr":     data.values[sirnas[s] + "_fdr"]
     })
   }
@@ -794,45 +820,45 @@ fetch('data/rnaseq-data.tsv.gz', function(tsv_string) {
       ensembl_id:        d.ensembl_id,
       hgnc_symbol:       d.hgnc_symbol,
       mean_expression:   +d.mean_expression,
-      t2_fold_change:    +d.t2_fold_change,
+      t2_log2_fold_change:    +d.t2_log2_fold_change,
       t2_pvalue:         +d.t2_pvalue,
-      t4_fold_change:    +d.t4_fold_change,
+      t4_log2_fold_change:    +d.t4_log2_fold_change,
       t4_pvalue:         +d.t4_pvalue,
-      t6_fold_change:    +d.t6_fold_change,
+      t6_log2_fold_change:    +d.t6_log2_fold_change,
       t6_pvalue:         +d.t6_pvalue,
-      t8_fold_change:    +d.t8_fold_change,
+      t8_log2_fold_change:    +d.t8_log2_fold_change,
       t8_pvalue:         +d.t8_pvalue,
-      t12_fold_change:   +d.t12_fold_change,
+      t12_log2_fold_change:   +d.t12_log2_fold_change,
       t12_pvalue:        +d.t12_pvalue,
-      t18_fold_change:   +d.t18_fold_change,
+      t18_log2_fold_change:   +d.t18_log2_fold_change,
       t18_pvalue:        +d.t18_pvalue,
-      t24_fold_change:   +d.t24_fold_change,
+      t24_log2_fold_change:   +d.t24_log2_fold_change,
       t24_pvalue:        +d.t24_pvalue,
-      d1_fold_change:    +d.d1_fold_change,
+      d1_log2_fold_change:    +d.d1_log2_fold_change,
       d1_pvalue:         +d.d1_pvalue,
-      d10_fold_change:   +d.d10_fold_change,
+      d10_log2_fold_change:   +d.d10_log2_fold_change,
       d10_pvalue:        +d.d10_pvalue,
-      CUX1_fold_change:  +d.CUX1_fold_change,
+      CUX1_log2_fold_change:  +d.CUX1_log2_fold_change,
       CUX1_ci_low:       +d.CUX1_ci_low,
       CUX1_ci_high:      +d.CUX1_ci_high,
       CUX1_pvalue:       +d.CUX1_pvalue,
       CUX1_fdr:          +d.CUX1_fdr,
-      ELF3_fold_change:  +d.ELF3_fold_change,
+      ELF3_log2_fold_change:  +d.ELF3_log2_fold_change,
       ELF3_ci_low:       +d.ELF3_ci_low,
       ELF3_ci_high:      +d.ELF3_ci_high,
       ELF3_pvalue:       +d.ELF3_pvalue,
       ELF3_fdr:          +d.ELF3_fdr,
-      LIFR_fold_change:  +d.LIFR_fold_change,
+      LIFR_log2_fold_change:  +d.LIFR_log2_fold_change,
       LIFR_ci_low:       +d.LIFR_ci_low,
       LIFR_ci_high:      +d.LIFR_ci_high,
       LIFR_pvalue:       +d.LIFR_pvalue,
       LIFR_fdr:          +d.LIFR_fdr,
-      STAT3_fold_change: +d.STAT3_fold_change,
+      STAT3_log2_fold_change: +d.STAT3_log2_fold_change,
       STAT3_ci_low:      +d.STAT3_ci_low,
       STAT3_ci_high:     +d.STAT3_ci_high,
       STAT3_pvalue:      +d.STAT3_pvalue,
       STAT3_fdr:         +d.STAT3_fdr,
-      STAT4_fold_change: +d.STAT4_fold_change,
+      STAT4_log2_fold_change: +d.STAT4_log2_fold_change,
       STAT4_ci_low:      +d.STAT4_ci_low,
       STAT4_ci_high:     +d.STAT4_ci_high,
       STAT4_pvalue:      +d.STAT4_pvalue,
@@ -854,6 +880,24 @@ fetch('data/rnaseq-data.tsv.gz', function(tsv_string) {
     })
   })
 });
+
+document.getElementById("download-select").onchange = function() {
+  if (this.value == "csv") {
+    table1.download("csv", "data.csv");
+  }
+  else if (this.value == "json") {
+    table1.download("json", "data.json");
+  }
+  else if (this.value == "xlsx") {
+    table1.download("xlsx", "data.xlsx", {sheetName:"My Data"});
+  }
+//  else if (this.value == "pdf") {
+//    table1.download("pdf", "data.pdf", {
+//      orientation: "portrait", //set page orientation to portrait
+//      title: "Gene expression response to TNF and IL-17A", //add title to report
+//    });
+//  }
+};
 
 
 //define some sample data
