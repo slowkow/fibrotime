@@ -211,7 +211,8 @@ var main = function() {
 //    .renderer('canvas')
 //    .run();
 
-  document.getElementById('loader').style.display = "none";
+  var loader = document.getElementById('loader');
+  loader.parentElement.style.display = "none";
 
   make_plotly(state);
   
@@ -340,6 +341,8 @@ var make_plotly = function(state) {
   }];
 
   var layout = {
+    autosize: true,
+    height: 450,
     title: 'Log2 Fold Change',
     // dragmode: 'lasso',
     dragmode: 'select',
@@ -643,6 +646,7 @@ var make_table = function() {
     // set height of table (in CSS or here), this enables the Virtual DOM and
     // improves render speed dramatically (can be any valid css height value)
     height: 600, 
+    sortArrowActive: '#FF0000',
     data: state.stats_table,
     layout: "fitDataFill",
     columns: table1_columns,

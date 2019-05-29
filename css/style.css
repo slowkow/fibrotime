@@ -14,6 +14,12 @@ background-color: #fff;
 cursor: pointer;
 }*/
 
+/* @media only screen and (max-width: 1000px) { */
+/* } */
+
+  .tabulator {
+    font-size: 1.15rem;
+  }
 
 /* Thanks to Luke Haas for the loader
  * https://github.com/lukehaas/css-loaders */
