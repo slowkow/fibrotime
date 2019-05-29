@@ -7,7 +7,7 @@ body {
 }
 .tabulator-row .tabulator-cell{
   padding: 8px 4px;
-  min-height: 130px;
+  min-height: 170px;
 }
 /*.tabulator-row.tabulator-selectable:hover {
 background-color: #fff;

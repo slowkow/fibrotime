@@ -88,7 +88,7 @@ var plot_time = function(selector, data) {
       "anchor": "middle",
       "fontStyle": "italic",
       "fontWeight": "normal",
-      "fontSize": 12
+      "fontSize": 18
     },
     "width": 80,
     "height": 60,
@@ -109,7 +109,9 @@ var plot_time = function(selector, data) {
           "title": "Time (h)",
           "values": [0, 24],
           "titleFont": "Helvetica Neue",
-          "titleFontWeight": "normal"
+          "titleFontWeight": "normal",
+          "titleFontSize": 16,
+          "labelFontSize": 16,
         }
       },
       "y": {
@@ -124,7 +126,9 @@ var plot_time = function(selector, data) {
         "axis": {
           "title": "Log2 TPM",
           "titleFont": "Helvetica Neue",
-          "titleFontWeight": "normal"
+          "titleFontWeight": "normal",
+          "titleFontSize": 16,
+          "labelFontSize": 16,
         }
       },
       "color": {
@@ -132,7 +136,10 @@ var plot_time = function(selector, data) {
         "field": "stimulation",
         "type": "nominal",
         "scale": {
-          "range": ["#FEB24C", "#E31A1C", "#800026"]
+          "range": ["#FEB24C", "#E31A1C", "#800026"],
+        },
+        "legend": {
+          "labelFontSize": 16,
         }
       }
     }
@@ -349,20 +356,21 @@ var make_plotly = function(state) {
     hovermode: 'closest',
     hoverlabel: {
       font: {
-        family: 'Helvetica Neue, Helvetica, Tahoma, sans'
+        family: 'Helvetica Neue, Helvetica, Tahoma, sans',
+        size: 20
       }
     },
     margin: {
-      l: 50,
+      l: 60,
       r: 50,
-      b: 50,
+      b: 60,
       t: 50,
       pad: 0
     },
     // showlegend: false,
     // showlegend: true,
     font: {
-      size: 14,
+      size: 20,
       family: 'Helvetica Neue, Helvetica, Tahoma, sans'
     },
     xaxis: {
@@ -549,16 +557,17 @@ var lineFormatter2 = function(cell, formatterParams, onRendered) {
 var table1_columns = [
   //{title:"Ensembl ID", field:"ensembl_id", width:150},
   {
-    title: "Time Series", field: "ensembl_id", width: 250, formatter: lineFormatter
+    title: "Time Series", field: "ensembl_id",
+    width: 320, formatter: lineFormatter
   },
   {
-    title: "siRNA", field: "ensembl_id", width: 150, formatter: lineFormatter2
+    title: "siRNA", field: "ensembl_id",
+    width: 180, formatter: lineFormatter2
   },
   {
     title:"Gene",
     field:"hgnc_symbol",
     headerFilter: "input",
-//         headerFilterParams: {min: 0, max: 10, step: 1}
     width: 100
   },
   // {
@@ -623,13 +632,13 @@ var row_hover = function(e, row) {
   // row - row component
   var ensembl_id = row._row.data.ensembl_id;
   var hgnc_symbol = row._row.data.hgnc_symbol;
-	var box_width = hgnc_symbol.length * 10; 
+	var box_width = hgnc_symbol.length * 13; 
   var point = scatter1.data[0].customdata.indexOf(ensembl_id);
   // FIXME This should not be hard-coded.
-	var xpx = scatter1.calcdata[0][0].t.xpx[point] + 52;
+	var xpx = scatter1.calcdata[0][0].t.xpx[point] + 62;
 	var ypx = scatter1.calcdata[0][0].t.ypx[point] + 50;
   console.log(ensembl_id, point, xpx, ypx);
-	var temp = '<g class="hovertext" transform="translate(' + xpx + ',' + ypx + ')"><path d="M0,0L6,6v4.59375h' + box_width + 'v-21.1875H6V-6Z" style="stroke-width: 1px; fill: rgb(51, 51, 51); stroke: rgb(255, 255, 255);"></path><text class="nums" data-notex="1" x="9" y="4.796875" data-unformatted="<i>' + hgnc_symbol + '</i>" data-math="N" text-anchor="start" style="font-family: &quot;Helvetica Neue&quot;, Helvetica, Tahoma, sans; font-size: 13px; fill: rgb(255, 255, 255); fill-opacity: 1; white-space: pre;"><tspan style="font-style:italic">' + hgnc_symbol + '</tspan></text></g>';
+	var temp = '<g class="hovertext" transform="translate(' + xpx + ',' + ypx + ')"><path d="M0,0L6,6v4.59375h' + box_width + 'v-21.1875H6V-6Z" style="stroke-width: 1px; fill: rgb(51, 51, 51); stroke: rgb(255, 255, 255);"></path><text class="nums" data-notex="1" x="9" y="4.796875" data-unformatted="<i>' + hgnc_symbol + '</i>" data-math="N" text-anchor="start" style="font-family: &quot;Helvetica Neue&quot;, Helvetica, Tahoma, sans; font-size: 18px; fill: rgb(255, 255, 255); fill-opacity: 1; white-space: pre;"><tspan style="font-style:italic">' + hgnc_symbol + '</tspan></text></g>';
 	var g = document.getElementsByClassName("hoverlayer")[0];
 	g.innerHTML = temp;
 }
@@ -650,6 +659,7 @@ var make_table = function() {
     data: state.stats_table,
     layout: "fitDataFill",
     columns: table1_columns,
+    resizableColumns: false,
     rowMouseEnter: row_hover,
     rowMouseLeave: row_hover_leave,
   });
@@ -680,10 +690,10 @@ var plot_sirna  = function(selector, data) {
       "anchor": "middle",
       "fontStyle": "italic",
       "fontWeight": "normal",
-      "fontSize": 12
+      "fontSize": 18
     },
     "width": 80,
-    "height": 60,
+    "height": 85,
     "data": {
       "values": values
     },
@@ -714,7 +724,9 @@ var plot_sirna  = function(selector, data) {
             "axis": {
               "title": "Fold Change",
               "titleFont": "Helvetica Neue",
-              "titleFontWeight": "normal"
+              "titleFontWeight": "normal",
+              "titleFontSize": 16,
+              "labelFontSize": 16,
             }
           },
           "x2": {
@@ -767,7 +779,8 @@ var plot_sirna  = function(selector, data) {
             "field": "sirna",
             "type": "ordinal",
             "axis": {
-              "title": false
+              "title": false,
+              "labelFontSize": 16,
             }
           },
           "color": {
