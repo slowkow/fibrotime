@@ -95,7 +95,9 @@ var plot_time = function(selector, data) {
     "data": {
       "values": data.values
     },
-    "mark": 'line',
+    "mark": {
+      "type": 'line',
+    },
     "transform": [
       {
         "calculate": "log(datum.gene + 1) / log(2)",
@@ -103,6 +105,7 @@ var plot_time = function(selector, data) {
       }
     ],
     "encoding": {
+      "size": {"value": 2},
       "x": {
         "field": "time", "type": "quantitative",
         "axis": {
@@ -236,7 +239,7 @@ var make_plotly_buttons = function(state) {
   var d = document.getElementById("scatter1-buttons");
 
   var r = document.createElement("div");
-  r.className = "fl w-50";
+  r.className = "fl w-60";
   d.appendChild(r);
 
   var x = document.createElement("div");
@@ -244,14 +247,14 @@ var make_plotly_buttons = function(state) {
   x.innerHTML = "x-axis: ";
   r.appendChild(x);
   x = document.createElement("div");
-  x.className = "fl pa2";
+  x.className = "fl pa2 f4";
   var s = document.createElement("select");
   for (var i = 0; i < cols.length; i++) {
     var b = document.createElement("option");
-    var label = cols[i].replace("_log2_fold_change", "");
-    b.className = "fl w-20 br3 ma1";
+    var label = stat_columns[cols[i].replace("_log2_fold_change", "")];
+    // b.className = "fl w-20 br3 ma1";
     b.value = cols[i];
-    if (label == "t6") {
+    if (cols[i] == 't6_log2_fold_change') {
       b.selected = 'selected';
     }
     b.innerHTML = label;
@@ -271,7 +274,7 @@ var make_plotly_buttons = function(state) {
   r.appendChild(x);
 
   var r = document.createElement("div");
-  r.className = "fl w-50";
+  r.className = "fl w-60";
   d.appendChild(r);
 
   var x = document.createElement("div");
@@ -279,14 +282,14 @@ var make_plotly_buttons = function(state) {
   x.innerHTML = "y-axis: ";
   r.appendChild(x);
   x = document.createElement("div");
-  x.className = "fl pa2";
+  x.className = "fl pa2 f4";
   var s = document.createElement("select");
   for (var i = 0; i < cols.length; i++) {
     var b = document.createElement("option");
-    var label = cols[i].replace("_log2_fold_change", "");
-    b.className = "fl w-20 br3 ma1";
+    var label = stat_columns[cols[i].replace("_log2_fold_change", "")];
+    // b.className = "fl w-20 br3 ma1";
     b.value = cols[i];
-    if (label == 'd10') {
+    if (cols[i] == 'd10_log2_fold_change') {
       b.selected = 'selected';
     }
     b.innerHTML = label;
@@ -654,7 +657,7 @@ var make_table = function() {
     selectable: false,
     // set height of table (in CSS or here), this enables the Virtual DOM and
     // improves render speed dramatically (can be any valid css height value)
-    height: 600, 
+    height: 170 * 4, 
     sortArrowActive: '#FF0000',
     data: state.stats_table,
     layout: "fitDataFill",
@@ -662,6 +665,8 @@ var make_table = function() {
     resizableColumns: false,
     rowMouseEnter: row_hover,
     rowMouseLeave: row_hover_leave,
+    // pagination:"local",
+    // paginationSize:3,
   });
 }
 
@@ -692,7 +697,7 @@ var plot_sirna  = function(selector, data) {
       "fontWeight": "normal",
       "fontSize": 18
     },
-    "width": 80,
+    "width": 90,
     "height": 85,
     "data": {
       "values": values
@@ -734,7 +739,7 @@ var plot_sirna  = function(selector, data) {
             "aggregate": "max"
           },
           //"size": {"value": 1},
-          "color": {"value": "#EFEFEF"}
+          "color": {"value": "#F5F5F5"}
         }
       },
       {
@@ -793,7 +798,7 @@ var plot_sirna  = function(selector, data) {
         }
       },
       {
-        "mark": {"type": "point", "filled": true},
+        "mark": {"type": "point", "filled": true, "size": 50},
         "encoding": {
           "x": {
             "field": "fold_change",
