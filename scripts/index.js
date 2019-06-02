@@ -126,6 +126,9 @@ var plot_time = function(selector, data) {
               "domain": "unaggregated",
               "nice": 3,
               "zero": false
+            },
+            "axis": {
+              "title": ""
             }
           },
           "color": {
