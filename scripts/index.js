@@ -431,7 +431,7 @@ var make_plotly = function(state) {
   var layout = {
     autosize: true,
     height: 450,
-    title: 'Log2 Fold Change',
+    title: 'Fold Change',
     // dragmode: 'lasso',
     dragmode: 'select',
     hovermode: 'closest',
