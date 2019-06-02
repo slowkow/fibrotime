@@ -1,5 +1,3 @@
-# fibrotime
-
 # fibrotime <a href="https://github.com/immunogenomics"><img src="https://avatars3.githubusercontent.com/u/13906712" width="121px" align="right" /></a>
 
 Explore the gene expression response to tumor necrosis factor (TNF) and interleukin 17 (IL-17A).
