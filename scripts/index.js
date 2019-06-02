@@ -1,4 +1,28 @@
 
+// This helps to convert log2 fold-change to a fractional number.
+// For example:
+// "-2" -> "1/4"
+// "-1" -> "1/2"
+// "0"  -> "1"
+// "2"  -> "4"
+// "10" -> "1024"
+var org_locale = Plotly.d3.locale;
+Plotly.d3.locale = (locale) => {
+  var result = org_locale(locale);
+  var org_number_format = result.numberFormat;
+  result.numberFormat = (format) => {
+    if (format != "pow2") {
+      return org_number_format(format)
+    }
+    return (x) => {
+      // return Math.pow(2, Number.parseFloat(x)).toString();
+      var y = new Fraction(Math.pow(2, Number.parseFloat(x)));
+      return y.toFraction(true);
+    }
+  }
+  return result;
+}
+
 var fetch = function(data_url, callback) {
   logTime('downloading ' + data_url);
   var oReq = new XMLHttpRequest();
@@ -438,7 +462,8 @@ var make_plotly = function(state) {
       showline: true,
       linecolor: '#969696',
       linewidth: 1,
-      mirror: 'ticks'
+      mirror: 'ticks',
+      tickformat: 'pow2'
     },
     yaxis: {
       title: {
@@ -449,7 +474,8 @@ var make_plotly = function(state) {
       showline: true,
       linecolor: '#969696',
       linewidth: 1,
-      mirror: 'ticks'
+      mirror: 'ticks',
+      tickformat: 'pow2'
     }
   };
 
