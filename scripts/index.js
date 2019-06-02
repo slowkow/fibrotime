@@ -99,7 +99,8 @@ var plot_time = function(selector, data) {
         },
         "mark": {
           "type": 'errorband',
-          "extent": "sd"
+          "extent": "sd",
+          "opacity": 0.25
         },
         "transform": [
           {
@@ -123,7 +124,6 @@ var plot_time = function(selector, data) {
             "field": "log2gene",
             "type": "quantitative",
             "scale": {
-              "domain": "unaggregated",
               "nice": 3,
               "zero": false
             },
@@ -235,6 +235,11 @@ var gene = null;
 var global_scatter1_spec = null;
 
 var table1 = null;
+var bonf = 1;
+
+var format_pow2 = function(cell, params, onRendered) {
+	return Math.pow(2, Number.parseFloat(cell.getValue())).toPrecision(2);
+}
 
 var main = function() {
 
@@ -370,8 +375,6 @@ function unpack(rows, key) {
 }
 
 var make_plotly = function(state) {
-
-  var bonf = 0.05 / state.stats_table.length;
 
   // var rows = state.stats_table.filter(
   //   row => row.t6_pvalue <= bonf || row.d10_pvalue <= bonf
@@ -612,6 +615,23 @@ var lineFormatter2 = function(cell, formatterParams, onRendered) {
   });
 };
 
+var format_pval = function(cell, params, onRendered) {
+  var this_col = cell.getColumn().getField().split("_", 2)[0];
+  console.log(cell.getData());
+  var this_fdr = this_col + "_fdr";
+  var fdr = cell.getData()[this_fdr];
+  var pval = cell.getValue();
+  // if (pval < bonf) {
+  if (fdr < 0.05) {
+    return "<b>" + pval + "</b>";
+  }
+  return pval;
+};
+
+var format_gene = function(cell, params, onRendered) {
+  return "<i>" + cell.getValue() + "</i>";
+};
+
 var table1_columns = [
   //{title:"Ensembl ID", field:"ensembl_id", width:150},
   {
@@ -625,6 +645,7 @@ var table1_columns = [
   {
     title:"Gene",
     field:"hgnc_symbol",
+    formatter: format_gene,
     headerFilter: "input",
     width: 100
   },
@@ -637,50 +658,50 @@ var table1_columns = [
   {
     title: "TNF at 6h",
     columns: [
-      {title:"log2FC", field:"t6_log2_fold_change"},
-      {title:"P", field:"t6_pvalue", headerFilter: "input", headerFilterFunc: "<="}
+      {title:"FC", field:"t6_log2_fold_change", formatter: format_pow2},
+      {title:"P", field:"t6_pvalue", formatter: format_pval, headerFilter: "input", headerFilterFunc: "<="}
     ]
   },
   {
     title: "IL-17A (10)",
     columns: [
-      {title:"log2FC", field:"d10_log2_fold_change"},
-      {title:"P", field:"d10_pvalue", headerFilter: "input", headerFilterFunc: "<="}
+      {title:"FC", field:"d10_log2_fold_change", formatter: format_pow2},
+      {title:"P", field:"d10_pvalue", formatter: format_pval, headerFilter: "input", headerFilterFunc: "<="}
     ]
   },
   {
     title: "si-CUX1",
     columns: [
-      {title:"log2FC", field:"CUX1_log2_fold_change"},
-      {title:"P", field:"CUX1_pvalue"}
+      {title:"FC", field:"CUX1_log2_fold_change", formatter: format_pow2},
+      {title:"P", field:"CUX1_pvalue", formatter: format_pval, headerFilter: "input", headerFilterFunc: "<="}
     ]
   },
   {
     title: "si-LIFR",
     columns: [
-      {title:"log2FC", field:"LIFR_log2_fold_change"},
-      {title:"P", field:"LIFR_pvalue"}
+      {title:"FC", field:"LIFR_log2_fold_change", formatter: format_pow2},
+      {title:"P", field:"LIFR_pvalue", formatter: format_pval, headerFilter: "input", headerFilterFunc: "<="}
     ]
   },
   {
     title: "si-STAT3",
     columns: [
-      {title:"log2FC", field:"STAT3_log2_fold_change"},
-      {title:"P", field:"STAT3_pvalue"}
+      {title:"FC", field:"STAT3_log2_fold_change", formatter: format_pow2},
+      {title:"P", field:"STAT3_pvalue", formatter: format_pval, headerFilter: "input", headerFilterFunc: "<="}
     ]
   },
   {
     title: "si-STAT4",
     columns: [
-      {title:"log2FC", field:"STAT4_log2_fold_change"},
-      {title:"P", field:"STAT4_pvalue"}
+      {title:"FC", field:"STAT4_log2_fold_change", formatter: format_pow2},
+      {title:"P", field:"STAT4_pvalue", formatter: format_pval, headerFilter: "input", headerFilterFunc: "<="}
     ]
   },
   {
     title: "si-ELF3",
     columns: [
-      {title:"log2FC", field:"ELF3_log2_fold_change"},
-      {title:"P", field:"ELF3_pvalue"}
+      {title:"FC", field:"ELF3_log2_fold_change", formatter: format_pow2},
+      {title:"P", field:"ELF3_pvalue", formatter: format_pval, headerFilter: "input", headerFilterFunc: "<="}
     ]
   }
 ];
@@ -881,7 +902,7 @@ var plot_sirna  = function(selector, data) {
             "field": "signif",
             "type": "nominal",
             "scale": {
-              "range": ["#999", "#333"]
+              "range": ["#999", "#000"]
             }
           }
         }
@@ -900,22 +921,31 @@ fetch('data/rnaseq-data.tsv.gz', function(tsv_string) {
       mean_expression:   +d.mean_expression,
       t2_log2_fold_change:    +d.t2_log2_fold_change,
       t2_pvalue:         +d.t2_pvalue,
+      t2_fdr:         +d.t2_fdr,
       t4_log2_fold_change:    +d.t4_log2_fold_change,
       t4_pvalue:         +d.t4_pvalue,
+      t4_fdr:         +d.t4_fdr,
       t6_log2_fold_change:    +d.t6_log2_fold_change,
       t6_pvalue:         +d.t6_pvalue,
+      t6_fdr:        +d.t6_fdr,
       t8_log2_fold_change:    +d.t8_log2_fold_change,
       t8_pvalue:         +d.t8_pvalue,
+      t8_fdr:         +d.t8_fdr,
       t12_log2_fold_change:   +d.t12_log2_fold_change,
       t12_pvalue:        +d.t12_pvalue,
+      t12_fdr:        +d.t12_fdr,
       t18_log2_fold_change:   +d.t18_log2_fold_change,
       t18_pvalue:        +d.t18_pvalue,
+      t18_fdr:        +d.t18_fdr,
       t24_log2_fold_change:   +d.t24_log2_fold_change,
       t24_pvalue:        +d.t24_pvalue,
+      t24_fdr:        +d.t24_fdr,
       d1_log2_fold_change:    +d.d1_log2_fold_change,
       d1_pvalue:         +d.d1_pvalue,
+      d1_fdr:        +d.d1_fdr,
       d10_log2_fold_change:   +d.d10_log2_fold_change,
       d10_pvalue:        +d.d10_pvalue,
+      d10_fdr:        +d.d10_fdr,
       CUX1_log2_fold_change:  +d.CUX1_log2_fold_change,
       CUX1_ci_low:       +d.CUX1_ci_low,
       CUX1_ci_high:      +d.CUX1_ci_high,
@@ -943,6 +973,7 @@ fetch('data/rnaseq-data.tsv.gz', function(tsv_string) {
       STAT4_fdr:         +d.STAT4_fdr
     };
   }).filter((d) => { return d.mean_expression > 1; });
+  bonf = 0.05 / state.stats_table.length;
 
   fetch('data/rnaseq-data-1-gene-tpm.tsv.gz', function(s) {
     state['tpm_matrix'] = d3.tsvParse(s);
