@@ -92,60 +92,112 @@ var plot_time = function(selector, data) {
     },
     "width": 80,
     "height": 60,
-    "data": {
-      "values": data.values
-    },
-    "mark": {
-      "type": 'line',
-    },
-    "transform": [
+    "layer": [
       {
-        "calculate": "log(datum.gene + 1) / log(2)",
-        "as": "log2gene"
-      }
-    ],
-    "encoding": {
-      "size": {"value": 2},
-      "x": {
-        "field": "time", "type": "quantitative",
-        "axis": {
-          "title": "Time (h)",
-          "values": [0, 24],
-          "titleFont": "Helvetica Neue",
-          "titleFontWeight": "normal",
-          "titleFontSize": 16,
-          "labelFontSize": 16,
+        "data": {
+          "values": data.values
+        },
+        "mark": {
+          "type": 'errorband',
+          "extent": "sd"
+        },
+        "transform": [
+          {
+            "calculate": "log(datum.gene + 1) / log(2)",
+            "as": "log2gene"
+          }
+        ],
+        "encoding": {
+          "x": {
+            "field": "time", "type": "quantitative",
+            "axis": {
+              "title": "Time (h)",
+              "values": [0, 24],
+              "titleFont": "Helvetica Neue",
+              "titleFontWeight": "normal",
+              "titleFontSize": 16,
+              "labelFontSize": 16,
+            }
+          },
+          "y": {
+            "field": "log2gene",
+            "type": "quantitative",
+            "scale": {
+              "domain": "unaggregated",
+              "nice": 3,
+              "zero": false
+            }
+          },
+          "color": {
+            "title": "",
+            "field": "stimulation",
+            "type": "nominal",
+            "scale": {
+              "range": ["#FEB24C", "#E31A1C", "#800026"],
+            },
+            "legend": {
+              "labelFontSize": 16,
+            }
+          }
         }
       },
-      "y": {
-        "aggregate": "average",
-        "field": "log2gene",
-        "type": "quantitative",
-        "scale": {
-          "domain": "unaggregated",
-          "nice": 3,
-          "zero": false
+      {
+        "data": {
+          "values": data.values
         },
-        "axis": {
-          "title": "Log2 TPM",
-          "titleFont": "Helvetica Neue",
-          "titleFontWeight": "normal",
-          "titleFontSize": 16,
-          "labelFontSize": 16,
-        }
-      },
-      "color": {
-        "title": "",
-        "field": "stimulation",
-        "type": "nominal",
-        "scale": {
-          "range": ["#FEB24C", "#E31A1C", "#800026"],
+        "mark": {
+          "type": 'line'
         },
-        "legend": {
-          "labelFontSize": 16,
+        "transform": [
+          {
+            "calculate": "log(datum.gene + 1) / log(2)",
+            "as": "log2gene"
+          }
+        ],
+        "encoding": {
+          "size": {"value": 2.5},
+          "x": {
+            "field": "time", "type": "quantitative",
+            "axis": {
+              "title": "Time (h)",
+              "values": [0, 24],
+              "titleFont": "Helvetica Neue",
+              "titleFontWeight": "normal",
+              "titleFontSize": 16,
+              "labelFontSize": 16,
+            }
+          },
+          "y": {
+            "aggregate": "average",
+            "field": "log2gene",
+            "type": "quantitative",
+            "scale": {
+              "domain": "unaggregated",
+              "nice": 3,
+              "zero": false
+            },
+            "axis": {
+              "title": "Log2 TPM",
+              "titleFont": "Helvetica Neue",
+              "titleFontWeight": "normal",
+              "titleFontSize": 16,
+              "labelFontSize": 16,
+            }
+          },
+          "color": {
+            "title": "",
+            "field": "stimulation",
+            "type": "nominal",
+            "scale": {
+              "range": ["#FEB24C", "#E31A1C", "#800026"],
+            },
+            "legend": {
+              "labelFontSize": 16,
+            }
+          }
         }
       }
-    }
+    ]
   };
 
   vegaEmbed(selector, vlSpec);
@@ -792,13 +844,18 @@ var plot_sirna  = function(selector, data) {
             "field": "signif",
             "type": "nominal",
             "scale": {
-              "range": ["#999", "#333"]
+              "range": ["#999", "#000"]
             }
           }
         }
       },
       {
-        "mark": {"type": "point", "filled": true, "size": 50},
+        "mark": {
+          "type": "point",
+          "filled": true,
+          "size": 50,
+          "opacity": 1
+        },
         "encoding": {
           "x": {
             "field": "fold_change",
