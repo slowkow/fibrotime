@@ -237,10 +237,6 @@ var global_scatter1_spec = null;
 var table1 = null;
 var bonf = 1;
 
-var format_pow2 = function(cell, params, onRendered) {
-	return Math.pow(2, Number.parseFloat(cell.getValue())).toPrecision(2);
-}
-
 var main = function() {
 
   var scatter1_spec = {
@@ -617,7 +613,6 @@ var lineFormatter2 = function(cell, formatterParams, onRendered) {
 
 var format_pval = function(cell, params, onRendered) {
   var this_col = cell.getColumn().getField().split("_", 2)[0];
-  console.log(cell.getData());
   var this_fdr = this_col + "_fdr";
   var fdr = cell.getData()[this_fdr];
   var pval = cell.getValue();
@@ -627,6 +622,17 @@ var format_pval = function(cell, params, onRendered) {
   }
   return pval;
 };
+
+var format_pow2 = function(cell, params, onRendered) {
+  var this_col = cell.getColumn().getField().split("_", 2)[0];
+  var this_fdr = this_col + "_fdr";
+  var fdr = cell.getData()[this_fdr];
+	var retval = Math.pow(2, Number.parseFloat(cell.getValue())).toPrecision(2);
+  if (fdr < 0.05) {
+    return "<b>" + retval + "</b>";
+  }
+  return retval;
+}
 
 var format_gene = function(cell, params, onRendered) {
   return "<i>" + cell.getValue() + "</i>";
