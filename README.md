@@ -18,16 +18,28 @@ Kamil Slowikowski, Hung N. Nguyen, Erika H. Noss, Daimon P. Simmons, Fumitaka Mi
 
 *bioRxiv* 2019. https://doi.org/10.1101/571315
 
+## :octocat: Get the code
+
+This repository includes the code for all of the analyses,
+and it also includes a stand-alone HTML and Javascript data viewer.
+
+Look for the Jupyter notebook files in the [analysis] folder to
+see how I ran the analyses.
+
+All the files needed to run the data viewer are in the [website]
+folder.
+
+[analysis]: https://github.com/slowkow/fibrotime/analysis
+[website]: https://github.com/slowkow/fibrotime/website
+
 ## :floppy_disk: Get the data
 
-Download the data from NCBI GEO:
+All of the RNA-seq and microarray gene expression data is available at NCBI GEO:
 
 <ul>
 <li><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE129488">GSE129488</a></li>
 </ul>
 
-## :octocat: Get the code
+Experimental data (QPCR, ChIP-PCR, ELISA, Migration) is availabe in the [experiments.xlsx] file.
 
-Get the code for the data viewer:
-
-- https://github.com/slowkow/fibrotime
+[experiments.xlsx]: https://github.com/slowkow/fibrotime/blob/master/analysis/data/experiments.xlsx?raw=true
