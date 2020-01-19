@@ -7,7 +7,7 @@ Our data includes experiments with time series, dose response, and gene silencin
 
 <p align="center">
   <b>https://immunogenomics.io/fibrotime</b>
-  <a href="https://immunogenomics.io/fibrotime/"><img width="80%" src="img/fibrotime-screenshot.jpg"></a>
+  <a href="https://immunogenomics.io/fibrotime/"><img width="80%" src="website/img/fibrotime-screenshot.jpg"></a>
 </p>
 
 ## :mortar_board: Read the paper
