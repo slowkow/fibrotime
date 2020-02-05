@@ -3,6 +3,8 @@
 Explore the gene expression response to tumor necrosis factor (TNF) and interleukin 17 (IL-17A).
 Our data includes experiments with time series, dose response, and gene silencing.
 
+[![DOI](https://zenodo.org/badge/175648361.svg)](https://zenodo.org/badge/latestdoi/175648361)
+
 ## :rocket: Explore the data
 
 <p align="center">
