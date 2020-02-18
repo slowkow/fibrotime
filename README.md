@@ -31,8 +31,8 @@ see how I ran the analyses.
 All the files needed to run the data viewer are in the [website]
 folder.
 
-[analysis]: https://github.com/slowkow/fibrotime/analysis
-[website]: https://github.com/slowkow/fibrotime/website
+[analysis]: https://github.com/slowkow/fibrotime/tree/master/analysis
+[website]: https://github.com/slowkow/fibrotime/tree/master/website
 
 ## :floppy_disk: Get the data
 
