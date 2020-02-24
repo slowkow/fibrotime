@@ -18,7 +18,9 @@ Our data includes experiments with time series, dose response, and gene silencin
 
 Kamil Slowikowski, Hung N. Nguyen, Erika H. Noss, Daimon P. Simmons, Fumitaka Mizoguchi, Gerald F.M. Watts, Michael F. Gurish, Michael B. Brenner, Soumya Raychaudhuri
 
-*bioRxiv* 2019. https://doi.org/10.1101/571315
+*PNAS* 2020. https://doi.org/10.1073/pnas.1912702117
+
+The preprint is available at bioRxiv: https://doi.org/10.1101/571315
 
 ## :octocat: Get the code
 
